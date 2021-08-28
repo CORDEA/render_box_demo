@@ -158,6 +158,28 @@ class _RenderBox extends RenderBox {
   }
 
   @override
+  void attach(covariant PipelineOwner owner) {
+    super.attach(owner);
+    children.values.forEach((e) => e.attach(owner));
+  }
+
+  @override
+  void detach() {
+    super.detach();
+    children.values.forEach((e) => e.detach());
+  }
+
+  @override
+  void redepthChildren() {
+    children.values.forEach(redepthChild);
+  }
+
+  @override
+  void visitChildren(RenderObjectVisitor visitor) {
+    children.values.forEach(visitor);
+  }
+
+  @override
   double computeMinIntrinsicHeight(double width) {
     return thumbnail?.getMinIntrinsicHeight(width) ?? 0;
   }
