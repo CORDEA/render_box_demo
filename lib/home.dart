@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -10,6 +11,10 @@ class HomePage extends StatelessWidget {
 }
 
 class _RenderObjectWidget extends RenderObjectWidget {
+  _RenderObjectWidget(this.title);
+
+  final Widget title;
+
   @override
   _RenderObjectElement createElement() => _RenderObjectElement(this);
 
@@ -23,50 +28,121 @@ class _RenderObjectWidget extends RenderObjectWidget {
   ) {}
 }
 
+enum _RenderBoxSlot {
+  title,
+}
+
 class _RenderObjectElement extends RenderObjectElement {
   _RenderObjectElement(_RenderObjectWidget widget) : super(widget);
 
-  @override
-  RenderObjectWidget get widget => super.widget as _RenderObjectWidget;
+  final Map<_RenderBoxSlot, Element> slotToChild = {};
 
   @override
-  RenderObject get renderObject => super.renderObject as _RenderBox;
+  _RenderObjectWidget get widget => super.widget as _RenderObjectWidget;
+
+  @override
+  _RenderBox get renderObject => super.renderObject as _RenderBox;
+
+  @override
+  void visitChildren(ElementVisitor visitor) {
+    slotToChild.values.forEach(visitor);
+  }
+
+  @override
+  void forgetChild(Element child) {
+    slotToChild.remove(child.slot);
+    super.forgetChild(child);
+  }
+
+  @override
+  void mount(Element? parent, Object? newSlot) {
+    super.mount(parent, newSlot);
+    _update(_RenderBoxSlot.title, widget.title);
+  }
+
+  @override
+  void update(covariant RenderObjectWidget newWidget) {
+    super.update(newWidget);
+    _update(_RenderBoxSlot.title, widget.title);
+  }
+
+  void _update(_RenderBoxSlot slot, Widget? widget) {
+    final oldWidget = slotToChild[slot];
+    final newWidget = updateChild(oldWidget, widget, slot);
+    if (oldWidget != null) {
+      slotToChild.remove(slot);
+    }
+    if (newWidget != null) {
+      slotToChild[slot] = newWidget;
+    }
+  }
 }
 
 class _RenderBox extends RenderBox {
+  final Map<_RenderBoxSlot, RenderBox> children = {};
+
+  RenderBox? _title;
+
+  RenderBox? get title => _title;
+
+  set title(RenderBox? value) {
+    _title = _updateChild(_title, value, _RenderBoxSlot.title);
+  }
+
+  RenderBox? _updateChild(
+    RenderBox? oldChild,
+    RenderBox? newChild,
+    _RenderBoxSlot slot,
+  ) {
+    if (oldChild != null) {
+      dropChild(oldChild);
+      children.remove(slot);
+    }
+    if (newChild != null) {
+      children[slot] = newChild;
+      adoptChild(newChild);
+    }
+    return newChild;
+  }
+
   @override
   double computeMinIntrinsicHeight(double width) {
-    // TODO: implement computeMinIntrinsicHeight
-    return super.computeMinIntrinsicHeight(width);
+    return title?.getMinIntrinsicHeight(width) ?? 0;
   }
 
   @override
   double computeMaxIntrinsicHeight(double width) {
-    // TODO: implement computeMaxIntrinsicHeight
-    return super.computeMaxIntrinsicHeight(width);
+    return title?.getMaxIntrinsicHeight(width) ?? 0;
   }
 
   @override
   double computeMinIntrinsicWidth(double height) {
-    // TODO: implement computeMinIntrinsicWidth
-    return super.computeMinIntrinsicWidth(height);
+    return title?.getMinIntrinsicWidth(height) ?? 0;
   }
 
   @override
   double computeMaxIntrinsicWidth(double height) {
-    // TODO: implement computeMaxIntrinsicWidth
-    return super.computeMaxIntrinsicWidth(height);
+    return title?.getMaxIntrinsicWidth(height) ?? 0;
   }
 
   @override
   void performLayout() {
-    // TODO: implement performLayout
     super.performLayout();
   }
 
   @override
   void paint(PaintingContext context, Offset offset) {
-    // TODO: implement paint
     super.paint(context, offset);
+    _paint(context, offset, title);
+  }
+
+  void _paint(PaintingContext context, Offset offset, RenderBox? box) {
+    if (box == null) {
+      return;
+    }
+    context.paintChild(
+      box,
+      (box.parentData! as BoxParentData).offset + offset,
+    );
   }
 }
