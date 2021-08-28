@@ -76,6 +76,37 @@ class _RenderObjectElement extends RenderObjectElement {
       slotToChild[slot] = newWidget;
     }
   }
+
+  @override
+  void insertRenderObjectChild(
+    covariant RenderObject child,
+    covariant _RenderBoxSlot slot,
+  ) {
+    switch (slot) {
+      case _RenderBoxSlot.title:
+        renderObject.title = child as RenderBox;
+        break;
+    }
+  }
+
+  @override
+  void removeRenderObjectChild(
+    covariant RenderObject child,
+    covariant _RenderBoxSlot slot,
+  ) {
+    switch (slot) {
+      case _RenderBoxSlot.title:
+        renderObject.title = null;
+        break;
+    }
+  }
+
+  @override
+  void moveRenderObjectChild(
+    covariant RenderObject child,
+    covariant Object? oldSlot,
+    covariant Object? newSlot,
+  ) {}
 }
 
 class _RenderBox extends RenderBox {
@@ -127,7 +158,12 @@ class _RenderBox extends RenderBox {
 
   @override
   void performLayout() {
-    super.performLayout();
+    final title = this.title;
+    final loose = constraints.loosen();
+    final titleSize = title == null
+        ? Size.zero
+        : (title..layout(loose.tighten(), parentUsesSize: true)).size;
+    size = constraints.constrain(Size(loose.maxWidth, titleSize.height));
   }
 
   @override
