@@ -210,8 +210,15 @@ class _RenderBox extends RenderBox {
     final titleSize = title == null
         ? Size.zero
         : (title..layout(loose.tighten(), parentUsesSize: true)).size;
+    if (title != null) {
+      final parentData = title.parentData! as BoxParentData;
+      parentData.offset = Offset(
+        0,
+        thumbnailSize.height,
+      );
+    }
     size = constraints.constrain(
-      Size(thumbnailSize.width, thumbnailSize.height),
+      Size(thumbnailSize.width, thumbnailSize.height + titleSize.height),
     );
   }
 
