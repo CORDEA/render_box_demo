@@ -11,8 +11,12 @@ class HomePage extends StatelessWidget {
 }
 
 class _RenderObjectWidget extends RenderObjectWidget {
-  _RenderObjectWidget(this.title);
+  _RenderObjectWidget(
+    this.thumbnail,
+    this.title,
+  );
 
+  final Widget thumbnail;
   final Widget title;
 
   @override
@@ -29,6 +33,7 @@ class _RenderObjectWidget extends RenderObjectWidget {
 }
 
 enum _RenderBoxSlot {
+  thumbnail,
   title,
 }
 
@@ -58,12 +63,14 @@ class _RenderObjectElement extends RenderObjectElement {
   void mount(Element? parent, Object? newSlot) {
     super.mount(parent, newSlot);
     _update(_RenderBoxSlot.title, widget.title);
+    _update(_RenderBoxSlot.thumbnail, widget.thumbnail);
   }
 
   @override
   void update(covariant RenderObjectWidget newWidget) {
     super.update(newWidget);
     _update(_RenderBoxSlot.title, widget.title);
+    _update(_RenderBoxSlot.thumbnail, widget.thumbnail);
   }
 
   void _update(_RenderBoxSlot slot, Widget? widget) {
@@ -86,6 +93,9 @@ class _RenderObjectElement extends RenderObjectElement {
       case _RenderBoxSlot.title:
         renderObject.title = child as RenderBox;
         break;
+      case _RenderBoxSlot.thumbnail:
+        renderObject.thumbnail = child as RenderBox;
+        break;
     }
   }
 
@@ -97,6 +107,9 @@ class _RenderObjectElement extends RenderObjectElement {
     switch (slot) {
       case _RenderBoxSlot.title:
         renderObject.title = null;
+        break;
+      case _RenderBoxSlot.thumbnail:
+        renderObject.thumbnail = null;
         break;
     }
   }
@@ -111,6 +124,14 @@ class _RenderObjectElement extends RenderObjectElement {
 
 class _RenderBox extends RenderBox {
   final Map<_RenderBoxSlot, RenderBox> children = {};
+
+  RenderBox? _thumbnail;
+
+  RenderBox? get thumbnail => _thumbnail;
+
+  set thumbnail(RenderBox? value) {
+    _thumbnail = _updateChild(_thumbnail, value, _RenderBoxSlot.thumbnail);
+  }
 
   RenderBox? _title;
 
@@ -138,37 +159,44 @@ class _RenderBox extends RenderBox {
 
   @override
   double computeMinIntrinsicHeight(double width) {
-    return title?.getMinIntrinsicHeight(width) ?? 0;
+    return thumbnail?.getMinIntrinsicHeight(width) ?? 0;
   }
 
   @override
   double computeMaxIntrinsicHeight(double width) {
-    return title?.getMaxIntrinsicHeight(width) ?? 0;
+    return thumbnail?.getMaxIntrinsicHeight(width) ?? 0;
   }
 
   @override
   double computeMinIntrinsicWidth(double height) {
-    return title?.getMinIntrinsicWidth(height) ?? 0;
+    return thumbnail?.getMinIntrinsicWidth(height) ?? 0;
   }
 
   @override
   double computeMaxIntrinsicWidth(double height) {
-    return title?.getMaxIntrinsicWidth(height) ?? 0;
+    return thumbnail?.getMaxIntrinsicWidth(height) ?? 0;
   }
 
   @override
   void performLayout() {
     final title = this.title;
+    final thumbnail = this.thumbnail;
     final loose = constraints.loosen();
+    final thumbnailSize = thumbnail == null
+        ? Size.zero
+        : (thumbnail..layout(loose.tighten(), parentUsesSize: true)).size;
     final titleSize = title == null
         ? Size.zero
         : (title..layout(loose.tighten(), parentUsesSize: true)).size;
-    size = constraints.constrain(Size(loose.maxWidth, titleSize.height));
+    size = constraints.constrain(
+      Size(thumbnailSize.width, thumbnailSize.height),
+    );
   }
 
   @override
   void paint(PaintingContext context, Offset offset) {
     super.paint(context, offset);
+    _paint(context, offset, thumbnail);
     _paint(context, offset, title);
   }
 
