@@ -7,7 +7,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text('Home')),
       body: Center(
-        child: _RenderObjectWidget(
+        child: _ImageListTile(
           thumbnail: Container(
             width: 174,
             height: 174,
@@ -21,8 +21,8 @@ class HomePage extends StatelessWidget {
   }
 }
 
-class _RenderObjectWidget extends RenderObjectWidget {
-  _RenderObjectWidget({
+class _ImageListTile extends RenderObjectWidget {
+  _ImageListTile({
     required this.thumbnail,
     required this.title,
     required this.titleBackgroundColor,
@@ -33,37 +33,39 @@ class _RenderObjectWidget extends RenderObjectWidget {
   final Color titleBackgroundColor;
 
   @override
-  _RenderObjectElement createElement() => _RenderObjectElement(this);
+  _ImageListTileElement createElement() => _ImageListTileElement(this);
 
   @override
-  _RenderBox createRenderObject(BuildContext context) => _RenderBox(
+  _ImageListTileRenderBox createRenderObject(BuildContext context) =>
+      _ImageListTileRenderBox(
         titleBackgroundColor: titleBackgroundColor,
       );
 
   @override
   void updateRenderObject(
     BuildContext context,
-    covariant _RenderBox renderObject,
+    covariant _ImageListTileRenderBox renderObject,
   ) {
     renderObject..titleBackgroundColor = titleBackgroundColor;
   }
 }
 
-enum _RenderBoxSlot {
+enum _ImageListTileSlot {
   thumbnail,
   title,
 }
 
-class _RenderObjectElement extends RenderObjectElement {
-  _RenderObjectElement(_RenderObjectWidget widget) : super(widget);
+class _ImageListTileElement extends RenderObjectElement {
+  _ImageListTileElement(_ImageListTile widget) : super(widget);
 
-  final Map<_RenderBoxSlot, Element> slotToChild = {};
-
-  @override
-  _RenderObjectWidget get widget => super.widget as _RenderObjectWidget;
+  final Map<_ImageListTileSlot, Element> slotToChild = {};
 
   @override
-  _RenderBox get renderObject => super.renderObject as _RenderBox;
+  _ImageListTile get widget => super.widget as _ImageListTile;
+
+  @override
+  _ImageListTileRenderBox get renderObject =>
+      super.renderObject as _ImageListTileRenderBox;
 
   @override
   void visitChildren(ElementVisitor visitor) {
@@ -79,18 +81,18 @@ class _RenderObjectElement extends RenderObjectElement {
   @override
   void mount(Element? parent, Object? newSlot) {
     super.mount(parent, newSlot);
-    _update(_RenderBoxSlot.title, widget.title);
-    _update(_RenderBoxSlot.thumbnail, widget.thumbnail);
+    _update(_ImageListTileSlot.title, widget.title);
+    _update(_ImageListTileSlot.thumbnail, widget.thumbnail);
   }
 
   @override
   void update(covariant RenderObjectWidget newWidget) {
     super.update(newWidget);
-    _update(_RenderBoxSlot.title, widget.title);
-    _update(_RenderBoxSlot.thumbnail, widget.thumbnail);
+    _update(_ImageListTileSlot.title, widget.title);
+    _update(_ImageListTileSlot.thumbnail, widget.thumbnail);
   }
 
-  void _update(_RenderBoxSlot slot, Widget? widget) {
+  void _update(_ImageListTileSlot slot, Widget? widget) {
     final oldWidget = slotToChild[slot];
     final newWidget = updateChild(oldWidget, widget, slot);
     if (oldWidget != null) {
@@ -104,13 +106,13 @@ class _RenderObjectElement extends RenderObjectElement {
   @override
   void insertRenderObjectChild(
     covariant RenderObject child,
-    covariant _RenderBoxSlot slot,
+    covariant _ImageListTileSlot slot,
   ) {
     switch (slot) {
-      case _RenderBoxSlot.title:
+      case _ImageListTileSlot.title:
         renderObject.title = child as RenderBox;
         break;
-      case _RenderBoxSlot.thumbnail:
+      case _ImageListTileSlot.thumbnail:
         renderObject.thumbnail = child as RenderBox;
         break;
     }
@@ -119,13 +121,13 @@ class _RenderObjectElement extends RenderObjectElement {
   @override
   void removeRenderObjectChild(
     covariant RenderObject child,
-    covariant _RenderBoxSlot slot,
+    covariant _ImageListTileSlot slot,
   ) {
     switch (slot) {
-      case _RenderBoxSlot.title:
+      case _ImageListTileSlot.title:
         renderObject.title = null;
         break;
-      case _RenderBoxSlot.thumbnail:
+      case _ImageListTileSlot.thumbnail:
         renderObject.thumbnail = null;
         break;
     }
@@ -139,14 +141,14 @@ class _RenderObjectElement extends RenderObjectElement {
   ) {}
 }
 
-class _RenderBox extends RenderBox {
-  _RenderBox({
+class _ImageListTileRenderBox extends RenderBox {
+  _ImageListTileRenderBox({
     required Color titleBackgroundColor,
   }) : _titleBackgroundColor = titleBackgroundColor;
 
   static final _titlePadding = 8.0;
 
-  final Map<_RenderBoxSlot, RenderBox> children = {};
+  final Map<_ImageListTileSlot, RenderBox> children = {};
 
   Color _titleBackgroundColor;
 
@@ -165,7 +167,7 @@ class _RenderBox extends RenderBox {
   RenderBox? get thumbnail => _thumbnail;
 
   set thumbnail(RenderBox? value) {
-    _thumbnail = _updateChild(_thumbnail, value, _RenderBoxSlot.thumbnail);
+    _thumbnail = _updateChild(_thumbnail, value, _ImageListTileSlot.thumbnail);
   }
 
   RenderBox? _title;
@@ -173,13 +175,13 @@ class _RenderBox extends RenderBox {
   RenderBox? get title => _title;
 
   set title(RenderBox? value) {
-    _title = _updateChild(_title, value, _RenderBoxSlot.title);
+    _title = _updateChild(_title, value, _ImageListTileSlot.title);
   }
 
   RenderBox? _updateChild(
     RenderBox? oldChild,
     RenderBox? newChild,
-    _RenderBoxSlot slot,
+    _ImageListTileSlot slot,
   ) {
     if (oldChild != null) {
       dropChild(oldChild);
