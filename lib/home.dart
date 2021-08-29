@@ -11,25 +11,31 @@ class HomePage extends StatelessWidget {
 }
 
 class _RenderObjectWidget extends RenderObjectWidget {
-  _RenderObjectWidget(
-    this.thumbnail,
-    this.title,
-  );
+  _RenderObjectWidget({
+    required this.thumbnail,
+    required this.title,
+    required this.titleBackgroundColor,
+  });
 
   final Widget thumbnail;
   final Widget title;
+  final Color titleBackgroundColor;
 
   @override
   _RenderObjectElement createElement() => _RenderObjectElement(this);
 
   @override
-  _RenderBox createRenderObject(BuildContext context) => _RenderBox();
+  _RenderBox createRenderObject(BuildContext context) => _RenderBox(
+        titleBackgroundColor: titleBackgroundColor,
+      );
 
   @override
   void updateRenderObject(
     BuildContext context,
     covariant _RenderBox renderObject,
-  ) {}
+  ) {
+    renderObject..titleBackgroundColor = titleBackgroundColor;
+  }
 }
 
 enum _RenderBoxSlot {
@@ -123,9 +129,25 @@ class _RenderObjectElement extends RenderObjectElement {
 }
 
 class _RenderBox extends RenderBox {
+  _RenderBox({
+    required Color titleBackgroundColor,
+  }) : _titleBackgroundColor = titleBackgroundColor;
+
   static final _titlePadding = 8.0;
 
   final Map<_RenderBoxSlot, RenderBox> children = {};
+
+  Color _titleBackgroundColor;
+
+  Color get titleBackgroundColor => _titleBackgroundColor;
+
+  set titleBackgroundColor(Color value) {
+    if (_titleBackgroundColor == value) {
+      return;
+    }
+    _titleBackgroundColor = value;
+    markNeedsLayout();
+  }
 
   RenderBox? _thumbnail;
 
@@ -236,6 +258,16 @@ class _RenderBox extends RenderBox {
   void paint(PaintingContext context, Offset offset) {
     super.paint(context, offset);
     _paint(context, offset, thumbnail);
+    final title = this.title;
+    context.canvas.drawRect(
+      Rect.fromLTWH(
+        offset.dx,
+        offset.dy + (thumbnail?.size.height ?? 0),
+        title == null ? 0 : title.size.width + _titlePadding * 2,
+        title == null ? 0 : title.size.height + _titlePadding * 2,
+      ),
+      Paint()..color = titleBackgroundColor,
+    );
     _paint(context, offset, title);
   }
 
