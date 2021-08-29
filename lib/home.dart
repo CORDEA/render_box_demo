@@ -123,6 +123,8 @@ class _RenderObjectElement extends RenderObjectElement {
 }
 
 class _RenderBox extends RenderBox {
+  static final _titlePadding = 8.0;
+
   final Map<_RenderBoxSlot, RenderBox> children = {};
 
   RenderBox? _thumbnail;
@@ -209,16 +211,24 @@ class _RenderBox extends RenderBox {
         : (thumbnail..layout(loose.tighten(), parentUsesSize: true)).size;
     final titleSize = title == null
         ? Size.zero
-        : (title..layout(loose.tighten(), parentUsesSize: true)).size;
+        : (title
+              ..layout(
+                loose.tighten(width: thumbnailSize.width - (_titlePadding * 2)),
+                parentUsesSize: true,
+              ))
+            .size;
     if (title != null) {
       final parentData = title.parentData! as BoxParentData;
       parentData.offset = Offset(
-        0,
-        thumbnailSize.height,
+        _titlePadding,
+        thumbnailSize.height + _titlePadding,
       );
     }
     size = constraints.constrain(
-      Size(thumbnailSize.width, thumbnailSize.height + titleSize.height),
+      Size(
+        thumbnailSize.width,
+        thumbnailSize.height + titleSize.height + _titlePadding,
+      ),
     );
   }
 
