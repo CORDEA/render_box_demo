@@ -6,6 +6,17 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Home')),
+      body: Center(
+        child: _RenderObjectWidget(
+          thumbnail: Container(
+            width: 174,
+            height: 174,
+            color: Colors.black12,
+          ),
+          title: Text('text', maxLines: 1),
+          titleBackgroundColor: Colors.pink.shade100,
+        ),
+      ),
     );
   }
 }
